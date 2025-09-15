@@ -18,5 +18,11 @@ namespace ApparelPlus.Controllers
             // load the view and pass the category list for display
             return View(categories);
         }
+
+        // GET: /Categories/Create => display empty Category form
+        public IActionResult Create()
+        {
+            return View();
+        }
     }
 }

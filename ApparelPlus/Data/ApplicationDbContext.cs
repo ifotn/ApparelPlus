@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ApparelPlus.Models;
 
 namespace ApparelPlus.Data
 {
@@ -9,5 +10,6 @@ namespace ApparelPlus.Data
             : base(options)
         {
         }
+        public DbSet<ApparelPlus.Models.Category> Category { get; set; } = default!;
     }
 }
