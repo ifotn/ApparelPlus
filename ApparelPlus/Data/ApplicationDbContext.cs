@@ -10,6 +10,8 @@ namespace ApparelPlus.Data
             : base(options)
         {
         }
-        public DbSet<ApparelPlus.Models.Category> Category { get; set; } = default!;
+        // DbSets to perform CRUD for each Model class
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }
