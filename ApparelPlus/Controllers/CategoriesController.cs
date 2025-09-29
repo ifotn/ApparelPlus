@@ -56,5 +56,57 @@ namespace ApparelPlus.Controllers
             // redirect to Index method to show updated Category list
             return RedirectToAction("Index");
         }
+
+        // GET: /Categories/Edit/5 => show pre-filled Category form
+        public IActionResult Edit(int id)
+        {
+            // check db for selected category
+            var category = _context.Categories.Find(id);
+
+            // error if id not in db
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            // load page and pass the Category object
+            return View(category);
+        }
+
+        // POST: /Categories/Edit/5 => update selected Category
+        [HttpPost]
+        public IActionResult Edit(int id, [Bind("CategoryId,Name")] Category category)
+        {
+            // validate
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            // edit & save to db
+            _context.Categories.Update(category);
+            _context.SaveChanges();
+
+            // refresh list
+            return RedirectToAction("Index");
+        }
+
+        // GET: /Categories/Delete/5 => delete selected Category
+        public IActionResult Delete(int id)
+        {
+            var category = _context.Categories.Find(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            // remove from db
+            _context.Categories.Remove(category);
+            _context.SaveChanges();
+
+            // redirect
+            return RedirectToAction("Index");
+        }
     }
 }
