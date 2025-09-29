@@ -13,6 +13,6 @@
         public int CategoryId { get; set; }
 
         // parent ref to Category in which product belongs
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }

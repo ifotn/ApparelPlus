@@ -1,4 +1,5 @@
 ﻿using ApparelPlus.Data;
+using ApparelPlus.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -32,6 +33,24 @@ namespace ApparelPlus.Controllers
             ViewBag.CategoryId = new SelectList(_context.Categories.ToList(), "CategoryId", "Name");
 
             return View();
+        }
+
+        // POST: /Products/Create => save new Product to db
+        [HttpPost]
+        public IActionResult Create([Bind("Name,Size,Price,Description,Image,CategoryId")] Product product)
+        {
+            // validate
+            if (!ModelState.IsValid)
+            {
+                return View(product);
+            }
+
+            // save to db
+            _context.Products.Add(product);
+            _context.SaveChanges();
+
+            // redirect
+            return RedirectToAction("Index");
         }
     }
 }
