@@ -1,10 +1,16 @@
-﻿namespace ApparelPlus.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ApparelPlus.Models
 {
     public class Product
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:c}")]
+        [Range(0.01,10000)]
         public decimal Price { get; set; }
+        
         public string Description { get; set; }
         public string Size { get; set; }
         public string? Image { get; set;  }
