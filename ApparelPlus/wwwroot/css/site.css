@@ -19,6 +19,7 @@ html {
 
 body {
   margin-bottom: 60px;
+  font-family: 'Rubik', sans-serif;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +29,20 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+.navbar-light {
+    background-color: #CFD8DC;
+}
+
+.btn-primary {
+    background-color: #00BCD4;
+}
+
+a {
+    color: #00BCD4;
+}
+
+.btn-danger {
+    background-color: #455A64;
 }
