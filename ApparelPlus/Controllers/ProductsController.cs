@@ -1,11 +1,13 @@
 ﻿using ApparelPlus.Data;
 using ApparelPlus.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApparelPlus.Controllers
 {
+    [Authorize(Roles = "Administrator")]  // restrict all methods to Admininstrator user role only
     public class ProductsController : Controller
     {
         // db connection
@@ -41,6 +43,7 @@ namespace ApparelPlus.Controllers
 
         // POST: /Products/Create => save new Product to db
         [HttpPost]
+        [ValidateAntiForgeryToken] // check hidden token to prevent Form POSTS from other domains
         public IActionResult Create([Bind("Name,Size,Price,Description,Image,CategoryId")] Product product)
         {
             // validate
@@ -79,6 +82,7 @@ namespace ApparelPlus.Controllers
 
         // POST: /Products/Edit/34 => save new Product to db
         [HttpPost]
+        [ValidateAntiForgeryToken] // check hidden token to prevent Form POSTS from other domains
         public IActionResult Edit(int id, [Bind("ProductId,Name,Size,Price,Description,Image,CategoryId")] Product product)
         {
             // validate

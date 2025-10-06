@@ -1,9 +1,11 @@
 ﻿using ApparelPlus.Data;
 using ApparelPlus.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApparelPlus.Controllers
 {
+    [Authorize(Roles = "Administrator")] // restrict access to all methods to Administrator users only
     public class CategoriesController : Controller
     {
         // shared db connection for all methods
@@ -41,6 +43,7 @@ namespace ApparelPlus.Controllers
 
         // POST: /Categories/Create => validate & create new Category from form submission
         [HttpPost]
+        [ValidateAntiForgeryToken] // check hidden token to prevent Form POSTS from other domains
         public IActionResult Create([Bind("Name")] Category category)
         {
             if (!ModelState.IsValid)
@@ -75,6 +78,7 @@ namespace ApparelPlus.Controllers
 
         // POST: /Categories/Edit/5 => update selected Category
         [HttpPost]
+        [ValidateAntiForgeryToken] // check hidden token to prevent Form POSTS from other domains
         public IActionResult Edit(int id, [Bind("CategoryId,Name")] Category category)
         {
             // validate
