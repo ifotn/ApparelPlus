@@ -20,5 +20,8 @@ namespace ApparelPlus.Models
 
         // parent ref to Category in which product belongs
         public Category? Category { get; set; }
+
+        // child ref to CartItems - 1 Product can be in many CartItems
+        public List<CartItem>? CartItems { get; set; }
     }
 }

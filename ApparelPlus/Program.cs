@@ -25,6 +25,9 @@ builder.Services.AddAuthentication()
         options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
     });
 
+// enable Sessions
+builder.Services.AddSession();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -53,5 +56,8 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
    .WithStaticAssets();
+
+// turn on Sessions
+app.UseSession();
 
 app.Run();

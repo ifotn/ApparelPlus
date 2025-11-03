@@ -12,9 +12,19 @@
             <div class="card text-center h-100">
                 <div class="card-body">
                     <h4>@product.Name</h4>
+                    <img src="~/img/placeholder.png" alt="Product Image" />
                     <p>@String.Format("{0:c}", product.Price)</p>
                     <p>@product.Size</p>
                     <p>@product.Description</p>
+                    <form method="post" action="/Store/AddToCart">
+                        @Html.AntiForgeryToken()
+                        <input name="ProductId" value="@product.ProductId" type="hidden" />
+                        <fieldset>
+                            <label for="Quantity">Quantity: </label>
+                            <input name="Quantity" required type="number" min="1" max="9999" />
+                        </fieldset>
+                        <button class="btn btn-primary mt-3">Add to Cart</button>
+                    </form>
                 </div>
             </div>
         </article>

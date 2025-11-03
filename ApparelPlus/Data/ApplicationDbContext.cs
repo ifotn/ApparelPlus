@@ -13,5 +13,6 @@ namespace ApparelPlus.Data
         // DbSets to perform CRUD for each Model class
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
     }
 }
