@@ -1,0 +1,77 @@
+﻿@model IEnumerable<ApparelPlus.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Cart";
+    decimal total = 0;  // initialize running total var
+}
+
+<h1>Cart</h1>
+
+@if (Model.Count() > 0)
+{
+    <table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Product)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>        
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+                total += (item.Quantity * item.Price);
+                <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.Name)
+                    <div>
+                        <img src="~/img/placeholder.png" alt="Product Image" />
+                    </div>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                        <a asp-action="DeleteFromCart" asp-route-id="@item.CartItemId" class="btn btn-danger" onclick="return confirmDelete();">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+       
+    }
+            <tr>
+                <td></td>
+                <td>
+                    <a asp-action="Index" class="btn btn-primary">
+                        Continue Shopping
+                    </a>
+                </td>
+                <td>
+                    <h3>Order Total: @String.Format("{0:c}", total)</h3>
+                </td>
+                <td>
+                    <a asp-action="Checkout" class="btn btn-primary">
+                        Checkout
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}
+else
+{
+    <h2>Your Cart is Empty</h2>
+    <a asp-action="Index" class="btn btn-primary">
+        Shop Now
+    </a>
+}
+

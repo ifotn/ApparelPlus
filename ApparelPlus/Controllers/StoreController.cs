@@ -1,6 +1,7 @@
 ﻿using ApparelPlus.Data;
 using ApparelPlus.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApparelPlus.Controllers
 {
@@ -85,6 +86,36 @@ namespace ApparelPlus.Controllers
             }
 
             return HttpContext.Session.GetString("CustomerId");
+        }
+
+        // GET: /Store/Cart => show current user's full cart
+        public IActionResult Cart()
+        {
+            // identify cart from session var
+            var customerId = GetCustomerId();
+
+            // get CartItems from db for this customer
+            var cartItems = _context.CartItems
+                .Where(c => c.CustomerId == customerId)
+                .Include(c => c.Product) // parent ref to include Product Name for display
+                .ToList();
+
+            // store Item Count in session var
+            var itemCount = (from c in cartItems select c.Quantity).Sum();
+            HttpContext.Session.SetInt32("ItemCount", itemCount);
+
+            // show view and pass CartItem data
+            return View(cartItems);
+        }
+
+        // GET: /Store/DeleteFromCart/22 => remove item from user's cart & refresh
+        public IActionResult DeleteFromCart(int id)
+        {
+            var cartItem = _context.CartItems.Find(id);
+            _context.CartItems.Remove(cartItem);
+            _context.SaveChanges();
+
+            return RedirectToAction("Cart");
         }
     }
 }
