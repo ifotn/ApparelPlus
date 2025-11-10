@@ -1,5 +1,6 @@
 ﻿using ApparelPlus.Data;
 using ApparelPlus.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -116,6 +117,42 @@ namespace ApparelPlus.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Cart");
+        }
+
+        // GET: /Store/Checkout => show form to capture customer info
+        // customer must log in now
+        [Authorize]
+        public IActionResult Checkout()
+        {
+            return View();
+        }
+
+        // POST: /Store/Checkout => store customer info in session var then go to Stripe payment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Order order)
+        {
+            // validate inputs
+            if (!ModelState.IsValid)
+            {
+                return View(order);
+            }
+
+            // auto-fill date, total & email
+            order.OrderDate = DateTime.Now;
+            order.CustomerId = User.Identity.Name;
+
+            var cartItems = _context.CartItems.Where(c => c.CustomerId == HttpContext.Session.GetString("CustomerId"));
+            order.OrderTotal = (from c in cartItems
+                                select (c.Quantity * c.Price)).Sum();
+
+            // store order obj w/10 props in a session var
+            HttpContext.Session.SetObject("Order", order);
+
+            // load payment page w/Stripe
+            return RedirectToAction("Payment");
+
         }
     }
 }
