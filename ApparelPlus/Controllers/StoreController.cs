@@ -199,5 +199,37 @@ namespace ApparelPlus.Controllers
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
         }
+
+        // GET: /Store/SaveOrder => create order, clear cart, redirect to Confirmation
+        [Authorize]
+        public IActionResult SaveOrder()
+        {
+            // create order
+            var order = HttpContext.Session.GetObject<Order>("Order");
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            // copy cart items => new order details
+            var cartItems = _context.CartItems.Where(c => c.CustomerId == GetCustomerId());
+            foreach (var item in cartItems)
+            {
+                var orderDetail = new OrderDetail
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    OrderId = order.OrderId
+                };
+                _context.OrderDetails.Add(orderDetail);
+                _context.CartItems.Remove(item);  // remove item from cart
+            }
+            _context.SaveChanges();
+
+            // empty cart
+            HttpContext.Session.SetInt32("ItemCount", 0);
+
+            // show order confirmation: /Orders/Details/72
+            return RedirectToAction("Details", "Orders", new { @id = order.OrderId });
+        }
     }
 }
