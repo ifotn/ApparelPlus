@@ -3,6 +3,8 @@ using ApparelPlus.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using Stripe.Checkout;
 
 namespace ApparelPlus.Controllers
 {
@@ -11,10 +13,14 @@ namespace ApparelPlus.Controllers
         // shared db connection
         private readonly ApplicationDbContext _context;
 
-        // constructor to instantiate db connection
-        public StoreController(ApplicationDbContext context)
+        // configuration to read stripe key from appsettings
+        private readonly IConfiguration _configuration;
+
+        // constructor to instantiate db connection & read vars from appsettings
+        public StoreController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: /Store => show Categories so user can choose 1
@@ -133,12 +139,6 @@ namespace ApparelPlus.Controllers
         [Authorize]
         public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Order order)
         {
-            // validate inputs
-            if (!ModelState.IsValid)
-            {
-                return View(order);
-            }
-
             // auto-fill date, total & email
             order.OrderDate = DateTime.Now;
             order.CustomerId = User.Identity.Name;
@@ -147,12 +147,57 @@ namespace ApparelPlus.Controllers
             order.OrderTotal = (from c in cartItems
                                 select (c.Quantity * c.Price)).Sum();
 
+            // validate inputs
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(order);
+            //}
+
             // store order obj w/10 props in a session var
             HttpContext.Session.SetObject("Order", order);
 
             // load payment page w/Stripe
             return RedirectToAction("Payment");
+        }
 
+        // GET: /Store/Payment => invoke Stripe Payment & redirect based on response
+        [Authorize]
+        public IActionResult Payment()
+        {
+            // get stripe key from configuration
+            StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
+
+            // get order from session var so we know the total of payment
+            var order = HttpContext.Session.GetObject<Order>("Order");
+            var orderTotal = order.OrderTotal;
+
+            // set up payment options and call Stripe
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string> { "card" },
+                Mode = "payment",
+                SuccessUrl = "https://" + Request.Host + "/Store/SaveOrder",
+                CancelUrl = "https://" + Request.Host + "/Store/Cart",
+                LineItems = new List<SessionLineItemOptions>
+                {
+                    new SessionLineItemOptions
+                    {
+                        Quantity = 1,
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long?)(orderTotal * 100),
+                            Currency = "cad",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions { Name = "Apparel+ Purchase" }
+                        }
+                    }
+                }
+            };
+
+            var service = new SessionService();
+            Session session = service.Create(options);
+
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);
         }
     }
 }

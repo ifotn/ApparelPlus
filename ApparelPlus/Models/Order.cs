@@ -44,7 +44,7 @@ namespace ApparelPlus.Models
         [MaxLength(15)]
         public string Phone { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Email")]
         [MaxLength(100)]
         public string CustomerId { get; set; }
