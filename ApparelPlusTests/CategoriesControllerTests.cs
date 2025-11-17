@@ -1,6 +1,7 @@
 using ApparelPlus.Controllers;
 using ApparelPlus.Data;
 using ApparelPlus.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApparelPlusTests;
@@ -38,7 +39,59 @@ public class CategoriesControllerTests
     }
 
     [TestMethod]
-    public void TestMethod1()
+    public void IndexReturnsIndexView()
     {
+        // no arrange needed here; happens automatically in TestInitialize
+
+        // act
+        var result = (ViewResult)controller.Index();
+
+        // assert
+        Assert.AreEqual("Index", result.ViewName);
+    }
+
+    [TestMethod]
+    public void IndexReturnsCategories()
+    {
+        // verify Index returns list of category data
+        // no arrange needed
+
+        // act
+        var result = (ViewResult)controller.Index();
+        List<Category> model = (List<Category>)result.Model;
+
+        // assert => is data model in view equal to our Categories data in mock db?
+        CollectionAssert.AreEqual(_context.Categories.ToList(), model);
+    }
+
+    [TestMethod]
+    public void EditGetValidIdReturnsEditView()
+    {
+        // act
+        var result = (ViewResult)controller.Edit(27);
+
+        // assert
+        Assert.AreEqual("Edit", result.ViewName);
+    }
+
+    [TestMethod]
+    public void EditGetInvalidIdReturns404View()
+    {
+        // act
+        var result = (ViewResult)controller.Edit(-1);
+
+        // assert
+        Assert.AreEqual("404", result.ViewName);
+    }
+
+    [TestMethod]
+    public void EditGetValidIdReturnsCategory()
+    {
+        // act
+        var result = (ViewResult)controller.Edit(27);
+        var model = (Category)result.Model;
+
+        // assert
+        Assert.AreEqual(_context.Categories.Find(27), model);
     }
 }

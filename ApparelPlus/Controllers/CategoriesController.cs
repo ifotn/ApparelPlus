@@ -32,7 +32,7 @@ namespace ApparelPlus.Controllers
             var categories = _context.Categories.ToList();
 
             // load the view and pass the category list for display
-            return View(categories);
+            return View("Index", categories);
         }
 
         // GET: /Categories/Create => display empty Category form
@@ -69,11 +69,11 @@ namespace ApparelPlus.Controllers
             // error if id not in db
             if (category == null)
             {
-                return NotFound();
+                return View("404");
             }
 
             // load page and pass the Category object
-            return View(category);
+            return View("Edit", category);
         }
 
         // POST: /Categories/Edit/5 => update selected Category
