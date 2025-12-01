@@ -38,7 +38,7 @@ namespace ApparelPlus.Controllers
         // GET: /Categories/Create => display empty Category form
         public IActionResult Create()
         {
-            return View();
+            return View("Create");
         }
 
         // POST: /Categories/Create => validate & create new Category from form submission
@@ -49,7 +49,7 @@ namespace ApparelPlus.Controllers
             if (!ModelState.IsValid)
             {
                 // form incomplete, show user the form again
-                return View();
+                return View("Create");
             }
 
             // create new Category in db using DbSet object - this writes hidden sql we don't see
@@ -84,7 +84,7 @@ namespace ApparelPlus.Controllers
             // validate
             if (!ModelState.IsValid)
             {
-                return View();
+                return View("Edit");
             }
 
             // edit & save to db
@@ -102,7 +102,7 @@ namespace ApparelPlus.Controllers
 
             if (category == null)
             {
-                return NotFound();
+                return View("404");
             }
 
             // remove from db
